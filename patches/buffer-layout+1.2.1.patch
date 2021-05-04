@@ -1,0 +1,14 @@
+diff --git a/node_modules/buffer-layout/lib/Layout.js b/node_modules/buffer-layout/lib/Layout.js
+index b6cf096..6f0024b 100644
+--- a/node_modules/buffer-layout/lib/Layout.js
++++ b/node_modules/buffer-layout/lib/Layout.js
+@@ -2327,7 +2327,8 @@ class Blob extends Layout {
+     }
+     if (!((src instanceof Buffer)
+           && (span === src.length))) {
+-      throw new TypeError(nameWithProperty('Blob.encode', this)
++      
++console.log(nameWithProperty('Blob.encode', this)
+                           + ' requires (length ' + span + ') Buffer as src');
+     }
+     if ((offset + span) > b.length) {

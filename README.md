@@ -1,27 +1,45 @@
-# KinSdkDemoAngular
+# kin-sdk-demo-angular
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.2.11.
+Demo of using the [kin-sdk](https://github.com/kin-sdk/kin-sdk) in a Angular app.
 
-## Development server
+## Steps to get this working
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+### Enable skipLibCheck
 
-## Code scaffolding
+You need to set `"skipLibCheck": true` in tsconfig.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### Add Buffer polyfill
 
-## Build
+```ts
+// In your polyfill file, eg: src/polyfill.ts
+;(window as any).global = window
+global.Buffer = global.Buffer || require('buffer').Buffer
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+### Patch `buffer-layout` package
 
-## Running unit tests
+There is an incompatibility with the 'buffer-layout' package in Angular.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```
+ERROR Error: Uncaught (in promise): Error: Non-base58 character
+```
 
-## Running end-to-end tests
+The workaround is to patch `node_modules/buffer-layout/lib/Layout.js`, the patch is in `./patches/buffer-layout+1.2.1.patch`.
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+## Project setup
 
-## Further help
+```
+yarn install
+```
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+### Compiles and hot-reloads for development
+
+```
+yarn serve
+```
+
+### Compiles and minifies for production
+
+```
+yarn build
+```

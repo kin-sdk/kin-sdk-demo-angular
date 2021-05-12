@@ -1,8 +1,8 @@
 // tslint:disable:no-non-null-assertion
 import { Component } from '@angular/core'
-import { KinClient, KinProd, Wallet } from '@kin-sdk/client'
+import { createWallet, KinClient, KinTest, Wallet } from '@kin-sdk/client'
 
-const client = new KinClient(KinProd)
+const client = new KinClient(KinTest)
 
 @Component({
   selector: 'app-root',
@@ -18,13 +18,13 @@ const client = new KinClient(KinProd)
       <ng-container *ngIf="!created">
         <button (click)="createAccount()">Create Account</button>
       </ng-container>
-      <pre>{{ result1 | json }}</pre>
-      <ng-container *ngIf="created">
-        <button (click)="resolveTokenAccounts()">Resolve Token Accounts</button>
-        <pre>{{ result2 | json }}</pre>
-        <button (click)="submitPayment()">Submit Payment</button>
-        <pre>{{ result3 | json }}</pre>
-      </ng-container>
+      <pre>{{ result1 }}</pre>
+      <button (click)="resolveTokenAccounts()">Resolve Token Accounts</button>
+      <pre>{{ result2 }}</pre>
+      <button (click)="requestAirdrop()">Request Airdrop</button>
+      <pre>{{ result3 }}</pre>
+      <button (click)="submitPayment()">Submit Payment</button>
+      <pre>{{ result4 }}</pre>
     </ng-container>
   `,
 })
@@ -34,18 +34,19 @@ export class AppComponent {
   result1?: string
   result2?: string
   result3?: string
+  result4?: string
 
   generateKeyPair(): void {
-    this.wallet = KinClient.createWallet('create', {})
+    this.wallet = createWallet('create')
   }
 
   async createAccount(): Promise<void> {
     this.result1 = 'createAccount'
     const [res, err] = await client.createAccount(this.wallet?.secret!)
     if (err) {
-      this.result1 = err
+      this.result1 = JSON.stringify(err)
     } else {
-      this.result1 = res
+      this.result1 = JSON.stringify(res)
       this.created = true
     }
   }
@@ -54,14 +55,25 @@ export class AppComponent {
     this.result2 = 'resolveTokenAccounts'
     const [res, err] = await client.resolveTokenAccounts(this.wallet?.publicKey!)
     if (err) {
-      this.result2 = err
+      this.result2 = JSON.stringify(err)
     } else {
       this.result2 = JSON.stringify(res)
     }
   }
 
+  async requestAirdrop(): Promise<void> {
+    this.result3 = 'requestAirdrop'
+    const [res, err] = await client.requestAirdrop(this.wallet?.publicKey!, '1000')
+    if (err) {
+      this.result3 = JSON.stringify(err)
+    } else {
+      this.result3 = JSON.stringify(res)
+      await this.resolveTokenAccounts()
+    }
+  }
+
   async submitPayment(): Promise<void> {
-    this.result3 = 'submitPayment'
+    this.result4 = 'submitPayment'
     const [res, err] = await client.submitPayment({
       secret: this.wallet?.secret!,
       tokenAccount: this.wallet?.publicKey!,
@@ -69,9 +81,10 @@ export class AppComponent {
       destination: 'Don8L4DTVrUrRAcVTsFoCRqei5Mokde3CV3K9Ut4nAGZ',
     })
     if (err) {
-      this.result3 = err
+      this.result4 = JSON.stringify(err)
     } else {
-      this.result3 = res
+      this.result4 = JSON.stringify(res)
+      await this.resolveTokenAccounts()
     }
   }
 }

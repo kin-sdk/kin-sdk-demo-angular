@@ -19,7 +19,7 @@ const client = new KinClient(KinTest)
         <button (click)="createAccount()">Create Account</button>
       </ng-container>
       <pre>{{ result1 }}</pre>
-      <button (click)="resolveTokenAccounts()">Resolve Token Accounts</button>
+      <button (click)="getBalances()">Get Balances</button>
       <pre>{{ result2 }}</pre>
       <button (click)="requestAirdrop()">Request Airdrop</button>
       <pre>{{ result3 }}</pre>
@@ -51,9 +51,9 @@ export class AppComponent {
     }
   }
 
-  async resolveTokenAccounts(): Promise<void> {
-    this.result2 = 'resolveTokenAccounts'
-    const [res, err] = await client.resolveTokenAccounts(this.wallet?.publicKey!)
+  async getBalances(): Promise<void> {
+    this.result2 = 'getBalances'
+    const [res, err] = await client.getBalances(this.wallet?.publicKey!)
     if (err) {
       this.result2 = JSON.stringify(err)
     } else {
@@ -68,7 +68,7 @@ export class AppComponent {
       this.result3 = JSON.stringify(err)
     } else {
       this.result3 = JSON.stringify(res)
-      await this.resolveTokenAccounts()
+      await this.getBalances()
     }
   }
 
@@ -84,7 +84,7 @@ export class AppComponent {
       this.result4 = JSON.stringify(err)
     } else {
       this.result4 = JSON.stringify(res)
-      await this.resolveTokenAccounts()
+      await this.getBalances()
     }
   }
 }
